@@ -1,50 +1,85 @@
-# .github/workflows/daily-checkin.yml
+# ==============================================================================
+#                 小米钱包每日任务 - GitHub Actions 工作流
+# ==============================================================================
+#
+# 功能:
+#   - 每日定时自动执行 `main.py` 脚本来完成小米钱包的签到任务。
+#   - 允许在 GitHub Actions 页面手动触发，方便测试和即时运行。
+#
+# 使用前置条件:
+#   1. 项目代码已推送到 GitHub 仓库。
+#   2. 必须在仓库的 "Settings" -> "Secrets and variables" -> "Actions" 中，
+#      创建一个名为 `XIAOMI_CONFIG_JSON` 的 Repository Secret。
+#      这个 Secret 的内容是你本地生成的 `xiaomiconfig.json` 文件的完整文本。
+#
+# ==============================================================================
 
 name: 小米钱包每日任务
 
-# 触发器配置
+# 触发器配置 (Triggers)
 on:
-  # 1. 定时触发：使用 cron 语法
-  #    下面的时间是 UTC 时间，'30 2 * * *' 对应的是北京时间上午 10:30
-  #    你可以根据自己的需求修改
+  # 1. 定时触发 (Scheduled Trigger)
+  #    使用 cron 语法设置定时任务。
+  #    注意：GitHub Actions 的 cron 时间是 UTC 标准时间。
+  #    下面的 '30 2 * * *' 对应的是北京时间 (UTC+8) 的上午 10:30。
+  #    你可以根据自己的需求修改这个时间。
   schedule:
     - cron: '30 2 * * *'
 
-  # 2. 手动触发：允许你在 GitHub 的 Actions 页面手动点击运行
+  # 2. 手动触发 (Manual Trigger)
+  #    这个配置会在你的仓库 Actions 页面生成一个 "Run workflow" 按钮，
+  #    允许你随时手动启动这个工作流。
   workflow_dispatch:
 
+# 任务定义 (Jobs)
 jobs:
-  # 定义一个名为 run-task 的任务
+  # 定义一个名为 `run-task` 的任务
   run-task:
-    # 使用最新的 Ubuntu 虚拟机作为运行环境
+    # 指定运行环境：使用 GitHub 提供的最新版 Ubuntu 虚拟机
     runs-on: ubuntu-latest
 
+    # 定义任务的执行步骤
     steps:
-      # 第一步：检出（下载）你的代码到虚拟机
+      # 步骤 1: 检出代码
+      # 功能：从你的仓库中下载最新的代码到虚拟机环境中。
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 第二步：设置 Python 环境
+      # 步骤 2: 设置 Python 环境
+      # 功能：安装指定版本的 Python 解释器。
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # 你可以指定需要的 Python 版本
+          python-version: '3.10' # 你可以根据需要更改 Python 版本
 
-      # 第三步：从 Secrets 创建 xiaomiconfig.json 文件
-      # 这是最关键的一步！
+      # 步骤 3: 从 Secrets 创建配置文件
+      # 功能：这是最关键的安全步骤。它会读取你预设的 GitHub Secret，
+      #      并将其内容动态地写入到一个临时的 `xiaomiconfig.json` 文件中。
+      #      这样，你的敏感凭证就不会以明文形式出现在代码或日志里。
       - name: Create xiaomiconfig.json from secret
         env:
-          # 将我们之前设置的 GitHub Secret 赋值给一个环境变量
+          # 将名为 `XIAOMI_CONFIG_JSON` 的 Secret 赋值给一个环境变量
           CONFIG_CONTENT: ${{ secrets.XIAOMI_CONFIG_JSON }}
         # 使用 shell 命令将环境变量的内容写入文件
-        run: echo "$CONFIG_CONTENT" > xiaomiconfig.json
+        # 如果 Secret 为空，则创建一个空的 json 列表 `[]`，防止脚本因文件不存在而报错
+        run: |
+          if [ -z "$CONFIG_CONTENT" ]; then
+            echo "[]" > xiaomiconfig.json
+            echo "Warning: XIAOMI_CONFIG_JSON secret is not set. Creating an empty config file."
+          else
+            echo "$CONFIG_CONTENT" > xiaomiconfig.json
+          fi
 
-      # 第四步：安装项目依赖
+      # 步骤 4: 安装项目依赖
+      # 功能：安装 `main.py` 运行所需的所有 Python 包。
+      #      为保证环境纯净，先升级 pip。
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests qrcode urllib3
 
-      # 第五步：执行每日任务脚本
+      # 步骤 5: 执行主任务脚本
+      # 功能：运行 `main.py` 脚本来执行所有的签到任务。
+      #      脚本的所有终端输出（print 语句）都会显示在这一步的日志中。
       - name: Run the daily task script
         run: python3 main.py

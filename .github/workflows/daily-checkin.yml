@@ -50,7 +50,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # 你可以根据需要更改 Python 版本
+          python-version: '3.13' # 你可以根据需要更改 Python 版本
 
       # 步骤 3: 从 Secrets 创建配置文件
       # 功能：这是最关键的安全步骤。它会读取你预设的 GitHub Secret，

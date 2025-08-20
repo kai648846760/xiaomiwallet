@@ -1,0 +1,10 @@
+[project]
+name = "xiaomi-master"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "qrcode>=8.2",
+    "requests>=2.32.5",
+]

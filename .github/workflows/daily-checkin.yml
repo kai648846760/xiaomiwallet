@@ -1,0 +1,50 @@
+# .github/workflows/daily-checkin.yml
+
+name: 小米钱包每日任务
+
+# 触发器配置
+on:
+  # 1. 定时触发：使用 cron 语法
+  #    下面的时间是 UTC 时间，'30 2 * * *' 对应的是北京时间上午 10:30
+  #    你可以根据自己的需求修改
+  schedule:
+    - cron: '30 2 * * *'
+
+  # 2. 手动触发：允许你在 GitHub 的 Actions 页面手动点击运行
+  workflow_dispatch:
+
+jobs:
+  # 定义一个名为 run-task 的任务
+  run-task:
+    # 使用最新的 Ubuntu 虚拟机作为运行环境
+    runs-on: ubuntu-latest
+
+    steps:
+      # 第一步：检出（下载）你的代码到虚拟机
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 第二步：设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # 你可以指定需要的 Python 版本
+
+      # 第三步：从 Secrets 创建 xiaomiconfig.json 文件
+      # 这是最关键的一步！
+      - name: Create xiaomiconfig.json from secret
+        env:
+          # 将我们之前设置的 GitHub Secret 赋值给一个环境变量
+          CONFIG_CONTENT: ${{ secrets.XIAOMI_CONFIG_JSON }}
+        # 使用 shell 命令将环境变量的内容写入文件
+        run: echo "$CONFIG_CONTENT" > xiaomiconfig.json
+
+      # 第四步：安装项目依赖
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests qrcode urllib3
+
+      # 第五步：执行每日任务脚本
+      - name: Run the daily task script
+        run: python3 main.py

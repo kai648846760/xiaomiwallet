@@ -40,8 +40,7 @@ USER_AGENT_MOBILE = (
 )
 # 获取 Cookie 时使用的桌面端 User-Agent (与原始版本保持一致)
 USER_AGENT_DESKTOP = (
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-    '(KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0'
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0'
 )
 
 

@@ -84,7 +84,6 @@ jobs:
       - name: 设置Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.2'
           channel: 'stable'
       
       # 安装系统依赖 (仅Android构建需要)
@@ -134,33 +133,13 @@ jobs:
       - name: 安装Python依赖
         run: |
           python -m pip install --upgrade pip
-          # 为移动平台安装精简依赖，避免watchdog等桌面依赖
-          if [[ "${{ matrix.platform }}" == "android" || "${{ matrix.platform }}" == "ios" ]]; then
-            pip install flet requests qrcode urllib3
-          else
-            pip install -e .
-          fi
+          # 根据官方文档，Flet构建只需要安装flet-cli
+          pip install flet
       
       # 构建应用
       - name: 构建Flet应用
         run: |
-          case "${{ matrix.platform }}" in
-            "windows")
-              flet build ${{ matrix.flet_target }} --verbose --module-name main_windows
-              ;;
-            "macos")
-              flet build ${{ matrix.flet_target }} --verbose --module-name main_macos
-              ;;
-            "android")
-              flet build ${{ matrix.flet_target }} --verbose --module-name main_android
-              ;;
-            "ios")
-              flet build ${{ matrix.flet_target }} --verbose --module-name main_ios
-              ;;
-            *)
-              flet build ${{ matrix.flet_target }} --verbose
-              ;;
-          esac
+          flet build ${{ matrix.flet_target }} --verbose
       
       # 创建发布目录
       - name: 准备发布文件

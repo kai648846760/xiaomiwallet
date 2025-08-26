@@ -20,13 +20,17 @@
 📱 **移动端**: Android APK、iOS IPA
 💻 **桌面端**: Windows、macOS
 
-**Windows平台编码问题已修复**：现在Windows用户可以正常使用所有功能，包括中文字符显示和文件操作。
-
 通过本地GUI程序，你可以安全、便捷地实现小米钱包每日任务的自动化管理。
 
 ## 📥 应用下载与使用
 
 **🚨 强烈建议使用本地GUI程序，这是最安全、最简单的方式！**
+
+### 页面展示
+<img width="1600" height="1256" alt="image" src="https://github.com/user-attachments/assets/f3d2e736-3ea1-4ea7-bbd4-4ee2634ded37" />
+<img width="1600" height="1256" alt="image" src="https://github.com/user-attachments/assets/a3f04cac-bba2-41bb-80c6-d361d77f0149" />
+<img width="1812" height="1378" alt="image" src="https://github.com/user-attachments/assets/c2de29e8-8e80-4296-8666-62a54ff4d041" />
+
 
 ### 📱 移动端下载
 

@@ -20,7 +20,6 @@ name: 构建多平台Flet应用
 # 权限设置
 permissions:
   contents: write
-  releases: write
   actions: read
 
 # 触发器配置

@@ -1,20 +1,71 @@
-# 小米钱包每日任务 - GitHub Actions 全自动版
+# 小米钱包每日任务 - GUI版本 + GitHub Actions 全自动版
 
 [![GitHub Actions Status](https://github.com/kai648846760/xiaomiwallet/actions/workflows/daily-checkin.yml/badge.svg)](https://github.com/kai648846760/xiaomiwallet/actions/workflows/daily-checkin.yml)
+[![Build Status](https://github.com/kai648846760/xiaomiwallet/actions/workflows/build-app.yml/badge.svg)](https://github.com/kai648846760/xiaomiwallet/actions/workflows/build-app.yml)
 
-这是一个部署在 GitHub Actions 上的全自动、无服务器（Serverless）小米钱包每日任务工具。
+这是一个功能完整的小米钱包每日任务工具，提供两种使用方式：
 
-你不需要自己的服务器，也不需要复杂的环境配置。**只需 Fork 本项目，通过几个简单的步骤配置一下你的账号信息，即可实现每日自动执行任务，彻底解放双手。**
+1. **🖥️ GUI桌面应用**：提供友好的图形界面，支持多账号管理、实时任务执行和结果查看
+2. **☁️ GitHub Actions自动化**：部署在云端的全自动、无服务器（Serverless）解决方案
+
+无论你喜欢哪种方式，都能轻松实现小米钱包每日任务的自动化管理。
+
+## 📥 GUI应用下载
+
+### 预编译版本下载
+
+前往 [Releases页面](https://github.com/kai648846760/xiaomiwallet/releases) 下载适合你操作系统的预编译版本：
+
+- **Windows用户**: 下载 `xiaomi-wallet-gui-windows.zip`
+- **macOS用户**: 下载 `xiaomi-wallet-gui-macos.tar.gz`
+- **Linux用户**: 下载 `xiaomi-wallet-gui-linux.tar.gz`
+
+### 使用方法
+
+1. 解压下载的文件到任意目录
+2. 双击运行可执行文件：
+   - Windows: `xiaomi-wallet-gui.exe`
+   - macOS/Linux: `xiaomi-wallet-gui`
+3. 首次运行会自动创建配置文件
+4. 使用界面添加账号并执行任务
+
+### 从源码运行
+
+如果你想从源码运行GUI应用：
+
+```bash
+# 克隆项目
+git clone https://github.com/kai648846760/xiaomiwallet.git
+cd xiaomiwallet
+
+# 安装依赖
+pip install flet requests qrcode urllib3
+# 或使用 uv: uv sync
+
+# 运行GUI应用
+python gui.py
+# 或使用 uv: uv run gui.py
+```
 
 ## ✨ 项目特色
 
-*   **🚀 Serverless**：完全基于免费的 GitHub Actions 运行，无需任何服务器成本。
-*   **🕒 自动执行**：每日定时自动运行，一次配置，长期有效。
-*   **🔐 安全可靠**：账号凭证通过 GitHub Repository Secrets 加密存储，代码中不涉及任何明文密钥，安全透明。
-*   **📱 终端二维码登录**：在本地通过命令行生成二维码，手机 App 扫码即可完成登录，过程安全便捷。
-*   **👥 多账号支持**：支持通过配置文件管理多个小米账号。
-*   **🔔 飞书消息推送 (可选)**：支持将每日运行结果通过飞书自定义机器人推送到指定会话。
-*   **🍴 “开箱即用”**：目标是让任何用户 Fork 本仓库后，都能通过本说明文档快速配置并成功运行。
+### GUI桌面应用特色
+*   **🖥️ 友好界面**：现代化的图形用户界面，操作简单直观
+*   **👥 多账号管理**：可视化添加、删除和管理多个小米账号
+*   **📱 扫码登录**：内置二维码生成，手机扫码即可完成账号添加
+*   **⚡ 实时执行**：一键执行所有账号任务，实时显示执行进度
+*   **📊 结果查看**：详细的任务执行记录和结果展示
+*   **🔄 自动刷新**：执行记录按时间倒序显示，最新结果一目了然
+*   **💾 本地存储**：所有数据本地保存，隐私安全有保障
+
+### GitHub Actions特色
+*   **🚀 Serverless**：完全基于免费的 GitHub Actions 运行，无需任何服务器成本
+*   **🕒 自动执行**：每日定时自动运行，一次配置，长期有效
+*   **🔐 安全可靠**：账号凭证通过 GitHub Repository Secrets 加密存储，代码中不涉及任何明文密钥，安全透明
+*   **📱 终端二维码登录**：在本地通过命令行生成二维码，手机 App 扫码即可完成登录，过程安全便捷
+*   **👥 多账号支持**：支持通过配置文件管理多个小米账号
+*   **🔔 飞书消息推送 (可选)**：支持将每日运行结果通过飞书自定义机器人推送到指定会话
+*   **🍴 "开箱即用"**：目标是让任何用户 Fork 本仓库后，都能通过本说明文档快速配置并成功运行
 
 ## ⚙️ 工作原理
 
@@ -144,6 +195,48 @@
 
 *   **Q: 项目是安全的吗？我的账号信息会泄露吗？**
     *   **A:** 本项目是完全安全的。你的账号凭证仅存储在你自己的 GitHub 仓库的加密 `Secrets` 中，除了你本人和 GitHub Actions 的虚拟机，没有任何人可以访问到。代码完全开源，你可以审查每一行。
+
+## 🔨 开发者信息
+
+### 构建多平台应用
+
+本项目使用GitHub Actions自动构建多平台的GUI应用。构建流程包括：
+
+1. **自动构建**: 当推送标签（如`v1.0.0`）时，会自动触发多平台构建
+2. **手动构建**: 在Actions页面可以手动触发构建流程
+3. **支持平台**: Windows、macOS、Linux
+4. **打包工具**: 使用PyInstaller将Python应用打包成独立可执行文件
+
+### 发布新版本
+
+要发布新版本，请按以下步骤操作：
+
+```bash
+# 1. 更新版本号（在pyproject.toml中）
+# 2. 提交更改
+git add .
+git commit -m "Release v1.0.0"
+
+# 3. 创建并推送标签
+git tag v1.0.0
+git push origin v1.0.0
+
+# 4. GitHub Actions会自动构建并创建Release
+```
+
+### 本地构建
+
+如果你想在本地构建应用：
+
+```bash
+# 安装构建依赖
+pip install pyinstaller
+
+# 构建应用
+pyinstaller --onefile --windowed --name xiaomi-wallet-gui gui.py
+
+# 构建产物在 dist/ 目录中
+```
 
 ## 📜 免责声明
 

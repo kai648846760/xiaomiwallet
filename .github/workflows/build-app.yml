@@ -1,0 +1,169 @@
+# ==============================================================================
+#                 小米钱包GUI应用 - 多平台构建工作流
+# ==============================================================================
+#
+# 功能:
+#   - 自动构建Windows、macOS和Linux平台的GUI可执行文件
+#   - 使用PyInstaller将Python应用打包成独立的可执行文件
+#   - 自动发布构建产物到GitHub Releases
+#
+# 触发条件:
+#   - 推送标签时自动构建
+#   - 手动触发构建
+#
+# ==============================================================================
+
+name: 构建多平台GUI应用
+
+# 触发器配置
+on:
+  # 当推送标签时触发（用于发布版本）
+  push:
+    tags:
+      - 'v*.*.*'
+  
+  # 手动触发
+  workflow_dispatch:
+
+# 任务定义
+jobs:
+  build:
+    name: 构建 ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            ext: .exe
+            artifact_name: xiaomi-wallet-gui-windows
+          - os: macos-latest
+            platform: macos
+            ext: ""
+            artifact_name: xiaomi-wallet-gui-macos
+          - os: ubuntu-latest
+            platform: linux
+            ext: ""
+            artifact_name: xiaomi-wallet-gui-linux
+    
+    steps:
+      # 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      # 设置Python环境
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      # 安装系统依赖（Linux需要额外的GUI库）
+      - name: 安装系统依赖 (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+      
+      # 安装Python依赖
+      - name: 安装Python依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install flet requests qrcode urllib3 pyinstaller
+      
+      # 构建应用
+      - name: 构建GUI应用
+        run: |
+          pyinstaller --onefile --windowed --name xiaomi-wallet-gui${{ matrix.ext }} gui.py
+      
+      # 创建发布目录
+      - name: 准备发布文件
+        shell: bash
+        run: |
+          mkdir -p release
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            cp dist/xiaomi-wallet-gui.exe release/
+            cp README.md release/
+            echo "[]" > release/xiaomiconfig.json
+          else
+            cp dist/xiaomi-wallet-gui release/
+            cp README.md release/
+            echo "[]" > release/xiaomiconfig.json
+            chmod +x release/xiaomi-wallet-gui
+          fi
+      
+      # 上传构建产物
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: release/
+          retention-days: 30
+  
+  # 发布任务（仅在推送标签时执行）
+  release:
+    name: 创建GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      # 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      # 下载所有构建产物
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+      
+      # 打包构建产物
+      - name: 打包构建产物
+        run: |
+          cd artifacts
+          
+          # Windows版本
+          cd xiaomi-wallet-gui-windows
+          zip -r ../xiaomi-wallet-gui-windows.zip .
+          cd ..
+          
+          # macOS版本
+          cd xiaomi-wallet-gui-macos
+          tar -czf ../xiaomi-wallet-gui-macos.tar.gz .
+          cd ..
+          
+          # Linux版本
+          cd xiaomi-wallet-gui-linux
+          tar -czf ../xiaomi-wallet-gui-linux.tar.gz .
+          cd ..
+      
+      # 创建GitHub Release
+      - name: 创建GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/xiaomi-wallet-gui-windows.zip
+            artifacts/xiaomi-wallet-gui-macos.tar.gz
+            artifacts/xiaomi-wallet-gui-linux.tar.gz
+          body: |
+            ## 小米钱包GUI应用 ${{ github.ref_name }}
+            
+            ### 下载说明
+            - **Windows用户**: 下载 `xiaomi-wallet-gui-windows.zip`，解压后运行 `xiaomi-wallet-gui.exe`
+            - **macOS用户**: 下载 `xiaomi-wallet-gui-macos.tar.gz`，解压后运行 `xiaomi-wallet-gui`
+            - **Linux用户**: 下载 `xiaomi-wallet-gui-linux.tar.gz`，解压后运行 `xiaomi-wallet-gui`
+            
+            ### 使用方法
+            1. 解压下载的文件
+            2. 首次运行时，程序会创建空的 `xiaomiconfig.json` 配置文件
+            3. 使用GUI界面添加账号并执行任务
+            
+            ### 注意事项
+            - 请确保网络连接正常
+            - 首次使用需要扫码登录小米账号
+            - 配置文件会保存在程序同目录下
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

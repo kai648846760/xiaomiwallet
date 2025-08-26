@@ -439,7 +439,7 @@ def main():
         if feishu_webhook:
             print("  - 检测到飞书 Webhook 配置，正在尝试推送...")
             send_feishu_notification(feishu_webhook, notification)
-        delay = random.randint(0, 180)
+        delay = random.randint(0, 15)
         print(f"随机延迟 {delay} 秒后执行，以避免集中请求...")
         time.sleep(delay)
 

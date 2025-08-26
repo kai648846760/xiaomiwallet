@@ -52,7 +52,23 @@ module_name = "gui"
 compile_app = false
 compile_packages = false
 
+# Windows平台配置
+[tool.flet.windows]
+module_name = "main_windows"
+
+# macOS平台配置
+[tool.flet.macos]
+module_name = "main_macos"
+
 [tool.flet.android]
+package = "com.xiaomi.wallet.gui"
+module_name = "main_android"
+permissions = [
+    "android.permission.INTERNET",
+    "android.permission.ACCESS_NETWORK_STATE",
+    "android.permission.WRITE_EXTERNAL_STORAGE",
+    "android.permission.READ_EXTERNAL_STORAGE"
+]
 signing_key_store = ""
 signing_key_store_password = ""
 signing_key_password = ""
@@ -60,6 +76,14 @@ signing_key_alias = "upload"
 
 [tool.flet.ios]
 bundle_id = "com.xiaomi.wallet.gui"
+module_name = "main_ios"
 team_id = ""
+
+[tool.flet.ios.info_plist_additions]
+NSInternetUsage = "此应用需要网络访问来执行小米钱包任务"
+NSNetworkUsageDescription = "此应用需要网络访问来执行小米钱包任务"
+
+[tool.flet.ios.info_plist_additions.NSAppTransportSecurity]
+NSAllowsArbitraryLoads = true
 
 # Web平台配置已移除，专注于桌面和移动平台

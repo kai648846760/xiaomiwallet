@@ -20,12 +20,10 @@ def macos_main():
     try:
         # 尝试导入Flet
         import flet as ft
-        print("✅ Flet模块导入成功")
         
         try:
             # 尝试导入GUI模块
             import gui
-            print("✅ GUI模块导入成功")
             
             def macos_app_main(page: ft.Page):
                 """macOS平台的应用主函数包装器"""

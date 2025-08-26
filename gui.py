@@ -4,11 +4,9 @@ import os
 import qrcode
 import requests
 import time
-import base64
 from datetime import datetime
 from typing import List, Dict, Optional, Union, Any
 import threading
-import io
 import random
 from pathlib import Path
 

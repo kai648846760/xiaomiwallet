@@ -19,27 +19,45 @@ try:
     
     try:
         # 导入GUI模块
-        from gui import main as gui_main
+        import gui
         
         def android_main(page: ft.Page):
             """Android平台的主函数包装器"""
             try:
-                # 设置页面基本属性
+                # 设置Android平台特定的页面属性
                 page.title = "小米钱包每日任务"
                 page.theme_mode = ft.ThemeMode.SYSTEM
                 page.padding = 10
+                page.scroll = ft.ScrollMode.AUTO
+                
+                # Android平台特定设置
+                page.adaptive = True  # 启用自适应UI
                 
                 # 调用原始GUI主函数
-                gui_main(page)
+                gui.main(page)
                 
             except Exception as e:
                 # 如果GUI启动失败，显示错误信息
                 error_text = ft.Text(
-                    f"应用启动失败：{str(e)}",
+                    f"Android应用启动失败：{str(e)}",
                     color=ft.colors.RED,
-                    size=16
+                    size=16,
+                    text_align=ft.TextAlign.CENTER
                 )
-                page.add(error_text)
+                
+                retry_button = ft.ElevatedButton(
+                    "重试",
+                    on_click=lambda _: page.window_close(),
+                    bgcolor=ft.colors.BLUE,
+                    color=ft.colors.WHITE
+                )
+                
+                page.add(
+                    ft.Column([
+                        error_text,
+                        retry_button
+                    ], alignment=ft.MainAxisAlignment.CENTER)
+                )
                 page.update()
                 print(f"Android应用启动错误: {e}")
         

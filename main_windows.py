@@ -40,12 +40,10 @@ def windows_main():
     try:
         # 尝试导入Flet
         import flet as ft
-        print("✅ Flet模块导入成功")
         
         try:
             # 尝试导入GUI模块
             import gui
-            print("✅ GUI模块导入成功")
             
             def windows_app_main(page: ft.Page):
                 """Windows平台的应用主函数包装器"""

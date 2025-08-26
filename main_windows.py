@@ -8,28 +8,7 @@ Windows平台专用启动脚本
 """
 
 import sys
-import os
-import locale
 from pathlib import Path
-
-# Windows编码设置
-if sys.platform.startswith('win'):
-    # 设置控制台编码为UTF-8
-    try:
-        import codecs
-        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
-        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
-    except Exception:
-        pass
-    
-    # 设置系统编码
-    try:
-        locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
-    except locale.Error:
-        try:
-            locale.setlocale(locale.LC_ALL, 'Chinese_China.65001')
-        except locale.Error:
-            pass
 
 # 添加当前目录到Python路径
 current_dir = Path(__file__).parent

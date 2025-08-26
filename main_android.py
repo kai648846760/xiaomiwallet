@@ -6,7 +6,6 @@ Android平台专用启动脚本
 """
 
 import sys
-import os
 from pathlib import Path
 
 # 确保当前目录在Python路径中

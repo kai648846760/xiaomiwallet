@@ -84,7 +84,7 @@ jobs:
       - name: 设置Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.29.2'
           channel: 'stable'
       
       # 安装系统依赖 (仅Android构建需要)
@@ -102,6 +102,21 @@ jobs:
           api-level: 34
           build-tools: 34.0.0
       
+      # 接受Android许可证 (仅Android构建需要)
+      - name: 接受Android许可证
+        if: matrix.platform == 'android'
+        run: |
+          yes | sdkmanager --licenses || true
+      
+      # 设置Android环境变量 (仅Android构建需要)
+      - name: 设置Android环境变量
+        if: matrix.platform == 'android'
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "$ANDROID_HOME/tools/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+      
       # 设置Xcode (仅iOS构建需要)
       - name: 设置Xcode
         if: matrix.platform == 'ios'
@@ -118,7 +133,23 @@ jobs:
       # 构建应用
       - name: 构建Flet应用
         run: |
-          flet build ${{ matrix.flet_target }} --verbose
+          case "${{ matrix.platform }}" in
+            "windows")
+              flet build ${{ matrix.flet_target }} --verbose --module-name main_windows
+              ;;
+            "macos")
+              flet build ${{ matrix.flet_target }} --verbose --module-name main_macos
+              ;;
+            "android")
+              flet build ${{ matrix.flet_target }} --verbose --module-name main_android
+              ;;
+            "ios")
+              flet build ${{ matrix.flet_target }} --verbose --module-name main_ios
+              ;;
+            *)
+              flet build ${{ matrix.flet_target }} --verbose
+              ;;
+          esac
       
       # 创建发布目录
       - name: 准备发布文件

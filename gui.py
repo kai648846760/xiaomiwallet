@@ -1,7 +1,6 @@
 import flet as ft
 import json
 import os
-import qrcode
 import requests
 import time
 from datetime import datetime

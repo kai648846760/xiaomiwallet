@@ -205,3 +205,17 @@ flet build ipa        # iOS (需要macOS)
 由于小米官方接口可能随时发生变化，本项目不保证其功能的长期可用性。
 
 用户在使用本项目时，应自行承担因使用不当或项目失效等原因可能造成的任何风险和损失。
+
+
+## ⭐ Star 支持 
+
+如果这个项目对您有帮助，请给一个 ⭐ Star 以表示支持！您的支持是我们持续改进的动力。 
+
+[![Star History Chart](https://api.star-history.com/svg?repos=kai648846760/xiaomiwallet&type=Date)](https://star-history.com/#kai648846760/xiaomiwallet&Date) 
+
+--- 
+
+<div align="center"> 
+  <strong>📱 小米钱包助手 - 让任务管理更便捷</strong><br> 
+  <em>Powered by Loki Wang</em> 
+</div>

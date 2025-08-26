@@ -151,20 +151,19 @@ jobs:
           # 额外安装flet-cli用于构建
           pip install flet-cli
       
-      # 构建应用
-      - name: 构建Flet应用
+      # 构建应用 - Web/PWA平台
+      - name: 构建Web/PWA应用
+        if: matrix.platform == 'web'
         run: |
-          # 根据平台选择构建命令
-          case "${{ matrix.platform }}" in
-            "web")
-              # 使用flet publish命令构建Web/PWA应用
-              flet publish gui.py --app-name "小米钱包助手" --app-short-name "小米钱包" --app-description "小米钱包每日任务自动化助手" --pwa-background-color "#ffffff" --pwa-theme-color "#FF6700" --distpath build/web
-              ;;
-            *)
-              # 其他平台使用常规build命令
-              flet build ${{ matrix.flet_target }} --verbose
-              ;;
-          esac
+          # 使用flet publish命令构建Web/PWA应用
+          flet publish gui.py --app-name "小米钱包助手" --app-short-name "小米钱包" --app-description "小米钱包每日任务自动化助手" --pwa-background-color "#ffffff" --pwa-theme-color "#FF6700" --distpath build/web
+
+      # 构建应用 - 其他平台
+      - name: 构建非Web平台应用
+        if: matrix.platform != 'web'
+        run: |
+          # 使用常规build命令构建其他平台应用
+          flet build ${{ matrix.flet_target }} --verbose
       
       # 创建发布目录
       - name: 准备发布文件

@@ -158,7 +158,7 @@ jobs:
           case "${{ matrix.platform }}" in
             "web")
               # 使用flet publish命令构建Web/PWA应用
-              flet publish --module-name gui --app-name "小米钱包助手" --app-short-name "小米钱包" --app-description "小米钱包每日任务自动化助手" --pwa-background-color "#ffffff" --pwa-theme-color "#FF6700" --output build/web
+              flet publish gui.py --app-name "小米钱包助手" --app-short-name "小米钱包" --app-description "小米钱包每日任务自动化助手" --pwa-background-color "#ffffff" --pwa-theme-color "#FF6700" --distpath build/web
               ;;
             *)
               # 其他平台使用常规build命令

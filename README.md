@@ -86,7 +86,7 @@ flet run gui.py --web
 pip install flet-cli
 
 # 构建Web/PWA应用
-flet publish --module-name gui --app-name "小米钱包助手" --app-short-name "小米钱包" --app-description "小米钱包每日任务自动化助手" --pwa-background-color "#ffffff" --pwa-theme-color "#FF6700" --output build/web
+flet publish gui.py --app-name "小米钱包助手" --app-short-name "小米钱包" --app-description "小米钱包每日任务自动化助手" --pwa-background-color "#ffffff" --pwa-theme-color "#FF6700" --distpath build/web
 ```
 
 构建完成后，可以在`build/web`目录中找到构建产物。将这些文件部署到Web服务器或直接在浏览器中打开`index.html`文件即可使用Web版本。在支持PWA的浏览器中（如Chrome、Edge），可以点击地址栏中的安装按钮将应用安装到桌面或移动设备。

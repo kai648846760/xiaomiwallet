@@ -3,7 +3,20 @@
 [![GitHub Actions Status](https://github.com/kai648846760/xiaomiwallet/actions/workflows/daily-checkin.yml/badge.svg)](https://github.com/kai648846760/xiaomiwallet/actions/workflows/daily-checkin.yml)
 [![Build Status](https://github.com/kai648846760/xiaomiwallet/actions/workflows/build-app.yml/badge.svg)](https://github.com/kai648846760/xiaomiwallet/actions/workflows/build-app.yml)
 
-由于原来Github action方式会导致账号异常，特开发GUI，方便使用。支持多平台。
+## 🚨 **<span style="color:red">重要警告</span>** 🚨
+
+### **<span style="color:red; font-weight:bold">⚠️ 服务器运行风险极高，强烈建议使用GUI本地模式！</span>**
+
+**<span style="color:red; font-weight:bold">使用GitHub Actions或其他服务器自动化方式运行此程序有很大概率导致小米账号异常或被封禁！</span>**
+
+**推荐使用方式：**
+- ✅ **GUI本地运行**：下载桌面版或移动版应用，在本地设备上运行
+- ✅ **降低封号风险**：本地IP环境更安全，避免服务器IP被识别为异常
+- ✅ **完全可控**：可以随时停止、调整执行频率和时间
+
+**<span style="color:red; font-weight:bold">如果您仍要使用服务器自动化模式，请自行承担账号风险！</span>**
+
+---
 
 基于Flet框架开发的跨平台小米钱包每日任务应用，支持以下平台：
 

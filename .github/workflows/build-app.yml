@@ -92,7 +92,7 @@ jobs:
         if: matrix.platform == 'android'
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk
+          sudo apt-get install -y openjdk-17-jdk libgtk-3-dev
       
       # 安装Android SDK (仅Android构建需要)
       - name: 设置Android SDK

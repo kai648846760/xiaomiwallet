@@ -11,6 +11,8 @@
 💻 **桌面端**: Windows、macOS
 ☁️ **云端**: GitHub Actions自动化
 
+**Windows平台编码问题已修复**：现在Windows用户可以正常使用所有功能，包括中文字符显示和文件操作。
+
 无论你喜欢哪种方式，都能轻松实现小米钱包每日任务的自动化管理。
 
 ## 📥 应用下载与使用
@@ -23,6 +25,8 @@
 - **iOS**: `xiaomi-wallet-gui-ios.zip` - 解压后通过Xcode或TestFlight安装 `.ipa` 文件
 
 ### 💻 桌面端下载
+
+从 [Releases页面](https://github.com/kai648846760/xiaomiwallet/releases) 下载桌面端版本：
 
 - **Windows**: `xiaomi-wallet-gui-windows.zip` - 解压后运行可执行文件
 - **macOS**: `xiaomi-wallet-gui-macos.tar.gz` - 解压后运行 `.app` 文件
@@ -63,7 +67,7 @@ flet run gui.py --web
 ### 🚀 多平台支持
 
 * **📱 移动端原生体验**：Android APK和iOS IPA，随时随地管理任务
-* **💻 桌面端完整功能**：Windows、macOS桌面应用
+* **💻 桌面端完整功能**：Windows、macOS桌面应用，已修复Windows编码问题
 * **☁️ 云端自动化**：GitHub Actions无服务器自动执行
 
 ### 🎯 核心功能
@@ -226,7 +230,7 @@ flet run gui.py --web
 
 - **🚀 自动触发**：推送标签时自动构建所有平台版本
 - **🎯 手动触发**：在Actions页面手动触发构建
-- **📱 支持平台**：Windows、macOS、Android、iOS
+- **📱 支持平台**：Windows、macOS、Android、iOS（已修复Windows编码问题）
 - **🛠️ 构建工具**：Flet + Flutter SDK + 平台特定工具链
 
 ### 📦 构建架构
@@ -268,7 +272,7 @@ pip install flet requests qrcode urllib3
 
 ```bash
 # 构建桌面应用
-flet build windows    # Windows
+flet build windows    # Windows（已修复编码问题）
 flet build macos      # macOS
 
 # 构建移动应用

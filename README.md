@@ -29,7 +29,8 @@
 ### 页面展示
 <img width="1600" height="1256" alt="image" src="https://github.com/user-attachments/assets/f3d2e736-3ea1-4ea7-bbd4-4ee2634ded37" />
 <img width="1600" height="1256" alt="image" src="https://github.com/user-attachments/assets/a3f04cac-bba2-41bb-80c6-d361d77f0149" />
-<img width="1812" height="1378" alt="image" src="https://github.com/user-attachments/assets/c2de29e8-8e80-4296-8666-62a54ff4d041" />
+<img width="1600" height="1256" alt="image" src="https://github.com/user-attachments/assets/75401ded-e818-4e9a-bbd6-001e068313c3" />
+
 
 
 ### 📱 移动端下载

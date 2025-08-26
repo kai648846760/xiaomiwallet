@@ -3,17 +3,19 @@
 # ==============================================================================
 #
 # 功能:
-#   - 自动构建Windows、macOS和Linux平台的GUI可执行文件
-#   - 使用PyInstaller将Python应用打包成独立的可执行文件
+#   - 自动构建核心平台：Windows、macOS、Android、iOS
+#   - 使用Flet官方推荐的构建工具进行打包
 #   - 自动发布构建产物到GitHub Releases
 #
 # 触发条件:
 #   - 推送标签时自动构建
 #   - 手动触发构建
 #
+# 基于Flet官方推荐的GitHub Actions配置
+# 参考: https://github.com/ndonkoHenri/flet-github-action-workflows
 # ==============================================================================
 
-name: 构建多平台GUI应用
+name: 构建多平台Flet应用
 
 # 触发器配置
 on:
@@ -28,24 +30,34 @@ on:
 # 任务定义
 jobs:
   build:
-    name: 构建 ${{ matrix.os }}
+    name: 构建 ${{ matrix.platform }}
     runs-on: ${{ matrix.os }}
     
     strategy:
       matrix:
         include:
+          # 桌面平台
           - os: windows-latest
             platform: windows
-            ext: .exe
+            flet_target: windows
             artifact_name: xiaomi-wallet-gui-windows
+            artifact_ext: ".exe"
           - os: macos-latest
             platform: macos
-            ext: ""
+            flet_target: macos
             artifact_name: xiaomi-wallet-gui-macos
+            artifact_ext: ".app"
+          # 移动平台
           - os: ubuntu-latest
-            platform: linux
-            ext: ""
-            artifact_name: xiaomi-wallet-gui-linux
+            platform: android
+            flet_target: apk
+            artifact_name: xiaomi-wallet-gui-android
+            artifact_ext: ".apk"
+          - os: macos-latest
+            platform: ios
+            flet_target: ipa
+            artifact_name: xiaomi-wallet-gui-ios
+            artifact_ext: ".ipa"
     
     steps:
       # 检出代码
@@ -58,39 +70,73 @@ jobs:
         with:
           python-version: '3.11'
       
-      # 安装系统依赖（Linux需要额外的GUI库）
-      - name: 安装系统依赖 (Linux)
-        if: matrix.platform == 'linux'
+      # 设置Flutter SDK
+      - name: 设置Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      
+      # 安装系统依赖 (仅Android构建需要)
+      - name: 安装系统依赖 (Android)
+        if: matrix.platform == 'android'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+          sudo apt-get install -y openjdk-17-jdk
+      
+      # 安装Android SDK (仅Android构建需要)
+      - name: 设置Android SDK
+        if: matrix.platform == 'android'
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          build-tools: 34.0.0
+      
+      # 设置Xcode (仅iOS构建需要)
+      - name: 设置Xcode
+        if: matrix.platform == 'ios'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
       
       # 安装Python依赖
       - name: 安装Python依赖
         run: |
           python -m pip install --upgrade pip
-          pip install flet requests qrcode urllib3 pyinstaller
+          pip install flet requests qrcode urllib3
       
       # 构建应用
-      - name: 构建GUI应用
+      - name: 构建Flet应用
         run: |
-          pyinstaller --onefile --windowed --name xiaomi-wallet-gui${{ matrix.ext }} gui.py
+          flet build ${{ matrix.flet_target }} --verbose
       
       # 创建发布目录
       - name: 准备发布文件
         shell: bash
         run: |
           mkdir -p release
-          if [ "${{ matrix.platform }}" = "windows" ]; then
-            cp dist/xiaomi-wallet-gui.exe release/
-            cp README.md release/
-            echo "[]" > release/xiaomiconfig.json
-          else
-            cp dist/xiaomi-wallet-gui release/
-            cp README.md release/
-            echo "[]" > release/xiaomiconfig.json
-            chmod +x release/xiaomi-wallet-gui
-          fi
+          
+          # 根据平台复制构建产物
+          case "${{ matrix.platform }}" in
+            "windows")
+              cp -r build/windows/* release/ 2>/dev/null || true
+              ;;
+            "macos")
+              cp -r build/macos/* release/ 2>/dev/null || true
+              ;;
+            "android")
+              cp -r build/apk/* release/ 2>/dev/null || true
+              find build -name "*.apk" -exec cp {} release/ \; 2>/dev/null || true
+              ;;
+            "ios")
+              cp -r build/ipa/* release/ 2>/dev/null || true
+              find build -name "*.ipa" -exec cp {} release/ \; 2>/dev/null || true
+              ;;
+          esac
+          
+          # 添加README和配置文件
+          cp README.md release/ 2>/dev/null || true
+          echo "[]" > release/xiaomiconfig.json
       
       # 上传构建产物
       - name: 上传构建产物
@@ -123,20 +169,31 @@ jobs:
         run: |
           cd artifacts
           
-          # Windows版本
-          cd xiaomi-wallet-gui-windows
-          zip -r ../xiaomi-wallet-gui-windows.zip .
-          cd ..
+          # 桌面平台
+          if [ -d "xiaomi-wallet-gui-windows" ]; then
+            cd xiaomi-wallet-gui-windows
+            zip -r ../xiaomi-wallet-gui-windows.zip .
+            cd ..
+          fi
           
-          # macOS版本
-          cd xiaomi-wallet-gui-macos
-          tar -czf ../xiaomi-wallet-gui-macos.tar.gz .
-          cd ..
+          if [ -d "xiaomi-wallet-gui-macos" ]; then
+            cd xiaomi-wallet-gui-macos
+            tar -czf ../xiaomi-wallet-gui-macos.tar.gz .
+            cd ..
+          fi
           
-          # Linux版本
-          cd xiaomi-wallet-gui-linux
-          tar -czf ../xiaomi-wallet-gui-linux.tar.gz .
-          cd ..
+          # 移动平台
+          if [ -d "xiaomi-wallet-gui-android" ]; then
+            cd xiaomi-wallet-gui-android
+            zip -r ../xiaomi-wallet-gui-android.zip .
+            cd ..
+          fi
+          
+          if [ -d "xiaomi-wallet-gui-ios" ]; then
+            cd xiaomi-wallet-gui-ios
+            zip -r ../xiaomi-wallet-gui-ios.zip .
+            cd ..
+          fi
       
       # 创建GitHub Release
       - name: 创建GitHub Release
@@ -145,24 +202,31 @@ jobs:
           files: |
             artifacts/xiaomi-wallet-gui-windows.zip
             artifacts/xiaomi-wallet-gui-macos.tar.gz
-            artifacts/xiaomi-wallet-gui-linux.tar.gz
+            artifacts/xiaomi-wallet-gui-android.zip
+            artifacts/xiaomi-wallet-gui-ios.zip
           body: |
-            ## 小米钱包GUI应用 ${{ github.ref_name }}
+            ## 小米钱包多平台应用 ${{ github.ref_name }}
             
-            ### 下载说明
-            - **Windows用户**: 下载 `xiaomi-wallet-gui-windows.zip`，解压后运行 `xiaomi-wallet-gui.exe`
-            - **macOS用户**: 下载 `xiaomi-wallet-gui-macos.tar.gz`，解压后运行 `xiaomi-wallet-gui`
-            - **Linux用户**: 下载 `xiaomi-wallet-gui-linux.tar.gz`，解压后运行 `xiaomi-wallet-gui`
+            ### 📱 移动端下载
+            - **Android用户**: 下载 `xiaomi-wallet-gui-android.zip`，解压后安装 `.apk` 文件
+            - **iOS用户**: 下载 `xiaomi-wallet-gui-ios.zip`，解压后通过Xcode或TestFlight安装 `.ipa` 文件
             
-            ### 使用方法
-            1. 解压下载的文件
-            2. 首次运行时，程序会创建空的 `xiaomiconfig.json` 配置文件
-            3. 使用GUI界面添加账号并执行任务
+            ### 💻 桌面端下载
+            - **Windows用户**: 下载 `xiaomi-wallet-gui-windows.zip`，解压后运行可执行文件
+            - **macOS用户**: 下载 `xiaomi-wallet-gui-macos.tar.gz`，解压后运行 `.app` 文件
             
-            ### 注意事项
+            ### 🚀 使用方法
+            1. 根据您的设备选择对应版本下载
+            2. 解压下载的文件
+            3. 首次运行时，程序会创建空的 `xiaomiconfig.json` 配置文件
+            4. 使用界面添加账号并执行任务
+            
+            ### ⚠️ 注意事项
             - 请确保网络连接正常
             - 首次使用需要扫码登录小米账号
-            - 配置文件会保存在程序同目录下
+            - 配置文件会保存在程序目录下
+            - Android版本需要允许安装未知来源应用
+            - iOS版本可能需要信任开发者证书
           draft: false
           prerelease: false
         env:

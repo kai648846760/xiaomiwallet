@@ -45,3 +45,21 @@ options = [
     "--windowed",
     "--add-data=README.md:.",
 ]
+
+# Flet构建配置
+[tool.flet]
+module_name = "gui"
+compile_app = false
+compile_packages = false
+
+[tool.flet.android]
+signing_key_store = ""
+signing_key_store_password = ""
+signing_key_password = ""
+signing_key_alias = "upload"
+
+[tool.flet.ios]
+bundle_id = "com.xiaomi.wallet.gui"
+team_id = ""
+
+# Web平台配置已移除，专注于桌面和移动平台

@@ -57,7 +57,7 @@
 4. **执行任务**：选择账号后点击"执行任务"开始自动签到
 5. **查看结果**：在界面中查看任务执行结果和历史记录
 
-### 🛠️ 从源码运行
+### 🚀 从源码运行
 
 如果你想从源码运行或进行开发：
 
@@ -76,6 +76,20 @@ flet run gui.py
 # 或者运行Web版本
 flet run gui.py --web
 ```
+
+#### 构建Web/PWA版本
+
+如果你想构建Web/PWA版本，可以使用以下命令：
+
+```bash
+# 安装flet-cli
+pip install flet-cli
+
+# 构建Web/PWA应用
+flet publish --module-name gui --app-name "小米钱包助手" --app-short-name "小米钱包" --app-description "小米钱包每日任务自动化助手" --pwa-background-color "#ffffff" --pwa-theme-color "#FF6700" --output build/web
+```
+
+构建完成后，可以在`build/web`目录中找到构建产物。将这些文件部署到Web服务器或直接在浏览器中打开`index.html`文件即可使用Web版本。在支持PWA的浏览器中（如Chrome、Edge），可以点击地址栏中的安装按钮将应用安装到桌面或移动设备。
 
 ## 🌟 项目特色
 

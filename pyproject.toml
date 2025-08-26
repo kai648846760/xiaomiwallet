@@ -94,4 +94,24 @@ NSNetworkUsageDescription = "此应用需要网络访问来执行小米钱包任
 [tool.flet.ios.info_plist_additions.NSAppTransportSecurity]
 NSAllowsArbitraryLoads = true
 
-# Web平台配置已移除，专注于桌面和移动平台
+# Web平台配置 - PWA支持
+# 注意：GitHub Actions构建时使用命令行参数配置PWA，这里的配置作为备用
+[tool.flet.web]
+app.module = "gui"
+
+# PWA配置
+[tool.flet.web.pwa]
+name = "小米钱包助手"
+short_name = "小米钱包"
+description = "小米钱包每日任务自动化助手"
+start_url = "/"
+scope = "/"
+background_color = "#ffffff"
+theme_color = "#FF6700"
+# 注意：请将下方的图标URL替换为实际的图标URL
+# icons = [
+#     { src = "https://example.com/icon-192x192.png", sizes = "192x192", type = "image/png" },
+#     { src = "https://example.com/icon-512x512.png", sizes = "512x512", type = "image/png" }
+# ]
+display = "standalone"
+orientation = "any"

@@ -68,6 +68,12 @@ jobs:
             flet_target: ipa
             artifact_name: xiaomi-wallet-gui-ios
             artifact_ext: ".ipa"
+          # Web/PWA平台
+          - os: ubuntu-latest
+            platform: web
+            flet_target: web
+            artifact_name: xiaomi-wallet-gui-web
+            artifact_ext: ".html"
     
     steps:
       # 检出代码
@@ -148,7 +154,17 @@ jobs:
       # 构建应用
       - name: 构建Flet应用
         run: |
-          flet build ${{ matrix.flet_target }} --verbose
+          # 根据平台选择构建命令
+          case "${{ matrix.platform }}" in
+            "web")
+              # 使用flet publish命令构建Web/PWA应用
+              flet publish --module-name gui --app-name "小米钱包助手" --app-short-name "小米钱包" --app-description "小米钱包每日任务自动化助手" --pwa-background-color "#ffffff" --pwa-theme-color "#FF6700" --output build/web
+              ;;
+            *)
+              # 其他平台使用常规build命令
+              flet build ${{ matrix.flet_target }} --verbose
+              ;;
+          esac
       
       # 创建发布目录
       - name: 准备发布文件
@@ -171,6 +187,9 @@ jobs:
             "ios")
               cp -r build/ipa/* release/ 2>/dev/null || true
               find build -name "*.ipa" -exec cp {} release/ \; 2>/dev/null || true
+              ;;
+            "web")
+              cp -r build/web/* release/ 2>/dev/null || true
               ;;
           esac
           
@@ -234,6 +253,13 @@ jobs:
             zip -r ../xiaomi-wallet-gui-ios.zip .
             cd ..
           fi
+          
+          # Web/PWA平台
+          if [ -d "xiaomi-wallet-gui-web" ]; then
+            cd xiaomi-wallet-gui-web
+            zip -r ../xiaomi-wallet-gui-web.zip .
+            cd ..
+          fi
       
       # 创建GitHub Release
       - name: 创建GitHub Release
@@ -244,6 +270,7 @@ jobs:
             artifacts/xiaomi-wallet-gui-macos.tar.gz
             artifacts/xiaomi-wallet-gui-android.zip
             artifacts/xiaomi-wallet-gui-ios.zip
+            artifacts/xiaomi-wallet-gui-web.zip
           body: |
             ## 小米钱包多平台应用 ${{ github.ref_name }}
             
@@ -254,6 +281,10 @@ jobs:
             ### 💻 桌面端下载
             - **Windows用户**: 下载 `xiaomi-wallet-gui-windows.zip`，解压后运行可执行文件
             - **macOS用户**: 下载 `xiaomi-wallet-gui-macos.tar.gz`，解压后运行 `.app` 文件
+            
+            ### 🌐 Web/PWA版本
+            - **所有用户**: 下载 `xiaomi-wallet-gui-web.zip`，解压后使用浏览器打开 `index.html` 文件
+            - **PWA安装**: 在支持PWA的浏览器中（如Chrome、Edge），打开后可点击地址栏中的安装按钮将应用安装到桌面或移动设备
             
             ### 🚀 使用方法
             1. 根据您的设备选择对应版本下载

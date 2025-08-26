@@ -19,13 +19,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "flet[all]>=0.25.0",
+    "flet>=0.25.0",
     "qrcode[pil]>=7.4.2",
     "requests>=2.32.5",
     "urllib3>=2.0.0",
-    "pillow>=10.0.0",
-    "watchdog",
-    "flet-cli"
+    "pillow>=10.0.0"
 ]
 
 [project.optional-dependencies]

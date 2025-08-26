@@ -124,11 +124,26 @@ jobs:
         with:
           xcode-version: latest-stable
       
+      # 安装Rosetta 2 (仅iOS构建需要，Apple Silicon Mac)
+      - name: 安装Rosetta 2
+        if: matrix.platform == 'ios'
+        run: |
+          sudo softwareupdate --install-rosetta --agree-to-license || true
+      
+      # 安装CocoaPods (仅iOS构建需要)
+      - name: 安装CocoaPods
+        if: matrix.platform == 'ios'
+        run: |
+          sudo gem install cocoapods
+      
       # 安装Python依赖
       - name: 安装Python依赖
         run: |
           python -m pip install --upgrade pip
-          pip install flet requests qrcode urllib3
+          # 安装项目依赖（包含flet和其他必要依赖）
+          pip install .
+          # 额外安装flet-cli用于构建
+          pip install flet-cli
       
       # 构建应用
       - name: 构建Flet应用
